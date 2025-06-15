@@ -13,4 +13,5 @@ public class DocumentFilterRequest : FilterRequest
 {
     public DocumentType? DocumentType { get; set; }
     public string? CodeNotation { get; set; }
+    public Guid? StorageId { get; set; }
 }

@@ -178,7 +178,16 @@ public class FileSignatureService : IFileSignatureService
 
         // Step 4: Load the PFX certificate
         using var pfxStream = await pfxResponse.Content.ReadAsStreamAsync();
-        var pfxKeyStore = new Pkcs12Store(pfxStream, digitalSignature.Password.ToCharArray());
+
+        Pkcs12Store pfxKeyStore;
+        try
+        {
+            pfxKeyStore = new Pkcs12Store(pfxStream, digitalSignature.Password.ToCharArray());
+        }
+        catch (Exception)
+        {
+            throw new Exception("Mã pin cho chứng thư số của bạn không hợp lệ");
+        }
 
         // Step 5: Initialize the PDF Stamper and create the signature appearance
         using var outputStream = new MemoryStream();
@@ -228,7 +237,7 @@ public class FileSignatureService : IFileSignatureService
         // Step 8: Sign the document
         var alias = pfxKeyStore.Aliases.Cast<string>().FirstOrDefault(entryAlias => pfxKeyStore.IsKeyEntry(entryAlias));
         if (alias == null)
-            throw new Exception("Private key not found in the PFX certificate.");
+            throw new Exception("Mã pin cho chứng thư số của bạn không hợp lệ");
 
         ICipherParameters privateKey = pfxKeyStore.GetKey(alias).Key;
         IExternalSignature pks = new PrivateKeySignature(privateKey, DigestAlgorithms.SHA256);

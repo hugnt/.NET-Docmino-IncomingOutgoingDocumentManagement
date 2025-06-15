@@ -186,7 +186,7 @@ public class DocumentService : IDocumentService
     {
         Expression<Func<Document, bool>> queryFilter = x =>
                             x.DocumentStatus == DocumentStatus.Published
-                            && x.StorageId == null
+                            && (filter.StorageId != null ? (x.StorageId == filter.StorageId || x.StorageId == null) : x.StorageId == null)
                             && (filter.SearchValue.IsEmpty() || x.Name.Contains(filter.SearchValue!) || x.CodeNotation!.Contains(filter.SearchValue!))
                             && (filter.DocumentType == null || x.DocumentRegister.RegisterType == filter.DocumentType);
 
